@@ -15,7 +15,7 @@ To install this package, add the following entry to your `packages.yml` file in 
 
 ```yaml
 packages:
-  - git: "https://github.com/your_github_username/yuki-snowflake-dbt-tags.git"
+  - git: "https://github.com/YukiTechnologies/yuki-snowflake-dbt-tags.git"
     revision: 0.1.0
 ```
 
