@@ -62,7 +62,7 @@ config-version: 2
 
 # Project dependencies
 packages:
-  - git: "https://github.com/your_github_username/yuki-snowflake-dbt-tags.git"
+  - git: "https://github.com/YukiTechnologies/yuki-snowflake-dbt-tags.git"
     revision: 0.1.0
 
 # Add on-run-start hook
