@@ -16,17 +16,19 @@ To install this package, add the following entry to your `packages.yml` file in 
 ```yaml
 packages:
   - git: "https://github.com/YukiTechnologies/yuki-snowflake-dbt-tags.git"
-    revision: 0.1.0
+    revision: main
 ```
 
 ## 🔧 Configuration
 
-To enable automatic query tagging, configure your dbt project to call the `set_query_tag` macro as an `on-run-start` hook in your main `dbt_project.yml` file:
+To enable automatic query tagging, configure your dbt project to call the set_query_tag macro as a pre-hook for specific models in your dbt_project.yml file. This approach allows you to tag each query executed by those models individually.
 
 ```yaml
-on-run-start:
-  - "{{ yuki_snowflake_dbt_tags.set_query_tag() }}"
+models:
+  <your_model>:
+    +pre-hook: "{{ yuki_snowflake_dbt_tags.set_query_tag() }}"
 ```
+Replace <your_model> with the specific model or folder you want to tag.
 
 **Specifying a Custom Job Name**
 
@@ -50,26 +52,9 @@ This custom job name will appear in your query tags, making it easier to identif
 
 This makes it easy to filter and analyze queries by job or model name in Snowflake’s history.
 
+## 📄 License
+This package is open-source under the MIT License. See the LICENSE file for details.
 
-## 📋 Example Configuration in dbt_project.yml
-
-Here’s a full example configuration in dbt_project.yml:
-
-```yaml
-name: 'my_dbt_project'
-version: '1.0.0'
-config-version: 2
-
-# Project dependencies
-packages:
-  - git: "https://github.com/YukiTechnologies/yuki-snowflake-dbt-tags.git"
-    revision: 0.1.0
-
-# Add on-run-start hook
-on-run-start:
-  - "{{ yuki_snowflake_dbt_tags.set_query_tag() }}"
-
-# Optionally, define the job_name here or via command-line as shown above
-vars:
-  job_name: 'default_job'
-```
+## 💬 Support
+If you have any questions or need help, feel free to open an issue or contact us directly. We’re here to help make Snowflake query management a breeze! 🐧✨
+www.yukidata.com
