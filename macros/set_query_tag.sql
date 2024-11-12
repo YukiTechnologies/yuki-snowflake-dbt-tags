@@ -1,10 +1,14 @@
 {% macro set_query_tag() %}
-    {% set model_name = this.name %}
-    {% set job_name = env_var('DBT_JOB_NAME', 'default_job') %}  -- Retrieve from environment variable, or use 'default_job'
+    {% if target.type == 'snowflake' %}
+        {% set model_name = this.name %}
+        {% set job_name = var('job_name', 'default_job') %}
 
-    -- Create JSON formatted query tag
-    {% set query_tag = '{"dbt_job":"' ~ job_name ~ '", "dbt_model":"' ~ model_name ~ '"}' %}
+        -- JSON formatted query tag
+        {% set query_tag = '{"dbt_job":"' ~ job_name ~ '", "dbt_model":"' ~ model_name ~ '"}' %}
 
-    -- Set the query tag in Snowflake
-    ALTER SESSION SET QUERY_TAG = '{{ query_tag }}';
+        -- Set the query tag in Snowflake
+        ALTER SESSION SET QUERY_TAG = '{{ query_tag }}';
+    {% else %}
+        {{ log("set_query_tag is only supported on Snowflake connections.", info=True) }}
+    {% endif %}
 {% endmacro %}
