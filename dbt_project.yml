@@ -4,6 +4,3 @@ config-version: 2
 
 # (Optional) Specify dbt's version requirement if needed
 require-dbt-version: [">=0.18.0"]
-
-# Dependencies (if you have any, like other packages)
-dependencies: []
