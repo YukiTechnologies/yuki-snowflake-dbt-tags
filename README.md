@@ -21,6 +21,12 @@ packages:
 
 ## 🔧 Configuration
 
+To generate a unique job ID at the start of each dbt job, add the following hook to your dbt_project.yml:
+```yaml
+on-run-start:
+  - "{% set generated_job_id = yuki_snowflake_dbt_tags.generate_job_id() %}"
+```
+
 To enable automatic query tagging, configure your dbt project to call the set_query_tag macro as a pre-hook for specific models in your dbt_project.yml file. This approach allows you to tag each query executed by those models individually.
 
 ```yaml
