@@ -21,10 +21,9 @@ packages:
 
 ## 🔧 Configuration
 
-To generate a unique job ID at the start of each dbt job, add the following hook to your dbt_project.yml:
+Need to set query comments to null in dbt_project.yml:
 ```yaml
-on-run-start:
-  - "{% set generated_job_id = yuki_snowflake_dbt_tags.generate_job_id() %}"
+query-comment: null
 ```
 
 To enable automatic query tagging, configure your dbt project to call the set_query_tag macro as a pre-hook for specific models in your dbt_project.yml file. This approach allows you to tag each query executed by those models individually.
@@ -53,7 +52,7 @@ This custom job name will appear in your query tags, making it easier to identif
 2.	View Tags in Snowflake: Log into Snowflake and navigate to the QUERY_HISTORY table to see the tags applied to each query. The tags are stored in the QUERY_TAG column in JSON format, for example:
 
 ```json
-{"dbt_job": "compute-events-full-job", "dbt_model": "your_model_name"}
+{"dbt_job": "compute-events-full-job", "dbt_model": "your_model_name", "job_started_at":"2024-11-14T08:47:50"}
 ```
 
 This makes it easy to filter and analyze queries by job or model name in Snowflake’s history.
