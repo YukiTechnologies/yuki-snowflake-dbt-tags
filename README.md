@@ -52,7 +52,7 @@ Next, configure the job-specific override:
 
 This custom job name will appear in your query tags, making it easier to identify and track specific jobs in the Snowflake query history.
 
-## 🌟 Enforce Original Warehouse Size (Optional)
+## 🌟 Enforce Original Warehouse Size
 
 If you have a use case where you want the job to run on the original warehouse size connected to dbt, you can disable Yuki for a specific run. To do this:
 1.	Add an environment variable (similar to the steps for DBT_JOB_NAME) with the following details:
