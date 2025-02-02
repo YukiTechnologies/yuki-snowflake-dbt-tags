@@ -1,11 +1,8 @@
 {% macro set_query_tag() %}
-    {% set query_tag = {
-        "dbt_enabled": env_var('DBT_YUKI_ENABLED', 'True'),
-        "dbt_job": env_var('DBT_JOB_NAME'),
-        "dbt_model": this.name,
-        "job_started_at": run_started_at.strftime('%Y-%m-%dT%H:%M:%S'),
-        "full_refresh": flags.FULL_REFRESH
-    } | tojson %}
-
+{% set model = this.name %}
+    {% set enabled = env_var('DBT_YUKI_ENABLED', 'True') %}
+    {% set job = env_var('DBT_JOB_NAME') %}
+    {% set started = run_started_at.strftime('%Y-%m-%dT%H:%M:%S') %}
+    {% set query_tag = '{"dbt_job":"' ~ job ~ '", "dbt_model":"' ~ model ~ '", "job_started_at":"' ~ job_started_at ~ '", "dbt_enabled":"' ~ enabled ~ '"}' %}
 ALTER SESSION SET QUERY_TAG = '{{ query_tag }}';
 {% endmacro %}
