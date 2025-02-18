@@ -1,1 +1,13 @@
-.idea
+# you shouldn't commit these into source control
+# these are the default directory names, adjust/add to fit your needs
+
+# dbt
+target/
+dbt_packages/
+logs/
+package-lock.yml
+.python-version
+manifest.json
+
+ # VSCode
+.vscode
