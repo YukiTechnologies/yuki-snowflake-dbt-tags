@@ -3,16 +3,13 @@
 {%- endmacro %}
 
 {% macro default__set_query_tag(extra = {}) -%}
-  {# Get session level query tag #}
   {% set original_query_tag = get_current_query_tag() %}
   {% set original_query_tag_parsed = {} %}
   {% set clean_original_query_tag = {} %}
   {% set clean_original_query_tag_parsed = {} %}
 
   {% if original_query_tag %}
-    {% set parts = original_query_tag.split(';;') if ';;' in original_query_tag else [original_query_tag] %}
-    {% set json_first = fromjson(parts[0]) if ';;' in original_query_tag else None %}
-    {% set clean_original_query_tag = parts[1] | trim if json_first is mapping and json_first.get('PseudoWarehouse') else original_query_tag %}
+    {% set clean_original_query_tag = modules.re.sub('^(\\{[^}]*"PseudoWarehouse"[^}]*\\})(;;(.*))?$', '\\3', original_query_tag) or '{}' %}
   {% endif %}
 
   {% if clean_original_query_tag %}
@@ -21,7 +18,7 @@
     {% endif %}
   {% endif %}
 
-  {# Start with any model-configured dict #}
+  {# Get model level query tags #}
   {% set query_tag = config.get('query_tag', default={}) %}
 
   {% if query_tag is not mapping %}
@@ -29,17 +26,21 @@
   {% set query_tag = {} %} {# If the user has set the query tag config as a non mapping type, start fresh #}
   {% endif %}
 
+  {# Add user session level and extra query tags #}
   {% do query_tag.update(clean_original_query_tag_parsed) %}
+  {% do query_tag.update(extra) %}
 
+  {# Add Yuki query tags #}
   {% do query_tag.update({
     "dbt_job": env_var('DBT_JOB_NAME'),
     "dbt_model": model.name,
-    "dbt_enabled": env_var('DBT_YUKI_ENABLED', true),
+    "dbt_enabled": env_var("DBT_YUKI_ENABLED", "true") | lower == "true",
     "invocation_id": invocation_id,
     "run_cmd": flags.WHICH,
     "resource_type": model.resource_type
   }) %}
 
+  {# Set full_refresh query tag for models only (not tests) #}
   {% if model.resource_type == 'model' %}
     {%- do query_tag.update(
       full_refresh=not is_incremental()
