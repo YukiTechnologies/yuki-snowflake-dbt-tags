@@ -5,7 +5,7 @@
 ## 🚀 Features
 
 - Automatically tags each query with a unique identifier in JSON format.
-- Includes the **dbt model name** and customizable **job name** in each tag.
+- Includes the **dbt model name**, **dbt invocation_id** and the customizable **job name** in each tag.
 - Simplifies query performance monitoring and debugging.
 - Fully configurable, making it easy to integrate with your existing dbt workflow.
 
@@ -16,24 +16,21 @@ To install this package, add the following entry to your `packages.yml` file in 
 ```yaml
 packages:
   - git: "https://github.com/YukiTechnologies/yuki-snowflake-dbt-tags.git"
-    revision: main
+    revision: [">=0.1.0", "<0.3.0"]
 ```
 
 ## 🔧 Configuration
 
-Need to set query comments to null in dbt_project.yml:
-```yaml
-query-comment: null
-```
-
-To enable automatic query tagging, configure your dbt project to call the set_query_tag macro as a pre-hook for specific models in your dbt_project.yml file. This approach allows you to tag each query executed by those models individually.
+To enable automatic query tagging, configure the dispatch search order in `dbt_project.yml`:
 
 ```yaml
-models:
-  <your_model>:
-    +pre-hook: "{{ yuki_snowflake_dbt_tags.set_query_tag() }}"
+dispatch:
+  - macro_namespace: dbt
+    search_order:
+      - <YOUR_PROJECT_NAME>
+      - yuki_snowflake_dbt_tags
+      - dbt
 ```
-Replace <your_model> with the specific model or folder you want to tag.
 
 **Specifying a Custom Job Name**
 
@@ -69,7 +66,14 @@ This configuration ensures that the job uses the original warehouse size while b
 2.	View Tags in Snowflake: Log into Snowflake and navigate to the QUERY_HISTORY table to see the tags applied to each query. The tags are stored in the QUERY_TAG column in JSON format, for example:
 
 ```json
-{"dbt_job": "your_job_name", "dbt_model": "your_model_name", "job_started_at":"2024-11-14T08:47:50", "job_started_at":"2024-11-14T08:47:50"}
+{
+  "dbt_job": "your_job_name",
+  "dbt_model": "your_model_name",
+  "invocation_id": "c5faa810-9e05-44d9-b00e-6a1bfbc82431",
+  "run_cmd": "build",
+  "resource_type": "model",
+  "full_refresh": false
+}
 ```
 
 This makes it easy to filter and analyze queries by job or model name in Snowflake’s history.
