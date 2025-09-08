@@ -46,12 +46,19 @@ jobs:
           echo "Expected version: $VERSION"
 
           # Check dbt_project.yml version
-          DBT_VERSION=$(python -c "import yaml; print(yaml.safe_load(open('dbt_project.yml'))['version'])")
+          DBT_VERSION=$(python -c "
+            import yaml;
+            print(yaml.safe_load(open('dbt_project.yml'))['version'])
+          ")
           echo "dbt_project.yml version: $DBT_VERSION"
 
           # Check hub.yml version (if it exists)
           if [ -f "hub.yml" ]; then
-            HUB_VERSION=$(python -c "import yaml; config=yaml.safe_load(open('hub.yml')); print(config.get('version', 'not-set'))")
+            HUB_VERSION=$(python -c "
+              import yaml;
+              config=yaml.safe_load(open('hub.yml'));
+              print(config.get('version', 'not-set'))
+            ")
             echo "hub.yml version: $HUB_VERSION"
           fi
 
@@ -64,7 +71,8 @@ jobs:
 
           # Validate versions match
           if [ "$DBT_VERSION" != "$VERSION" ]; then
-            echo "❌ Version mismatch: dbt_project.yml ($DBT_VERSION) != expected ($VERSION)"
+            echo "❌ Version mismatch: dbt_project.yml ($DBT_VERSION) != " \
+              "expected ($VERSION)"
             exit 1
           fi
 
@@ -96,12 +104,15 @@ jobs:
           EOF
 
           # Validate main project
-          dbt parse --profiles-dir ./ci/profiles || echo "Parse validation completed"
+          dbt parse --profiles-dir ./ci/profiles || \
+            echo "Parse validation completed"
 
           # Validate integration tests
           cd integration_tests
-          dbt deps --profiles-dir ../ci/profiles || echo "Dependencies check completed"
-          dbt parse --profiles-dir ../ci/profiles || echo "Integration tests validation completed"
+          dbt deps --profiles-dir ../ci/profiles || \
+            echo "Dependencies check completed"
+          dbt parse --profiles-dir ../ci/profiles || \
+            echo "Integration tests validation completed"
 
       - name: Generate release notes
         run: |
@@ -127,7 +138,8 @@ jobs:
 
           ## Documentation
 
-          See [README.md](README.md) for full documentation and usage instructions.
+          See [README.md](README.md) for full documentation and usage
+          instructions.
           EOF
 
           echo "Release notes generated"
