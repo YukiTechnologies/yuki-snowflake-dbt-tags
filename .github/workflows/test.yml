@@ -184,9 +184,7 @@ jobs:
       - name: Lint YAML files
         run: |
           echo "Linting YAML files..."
-          yamllint -d "{extends: default, rules: {line-length: {max: 120},
-          indentation: {spaces: 2}}}" . || \
-            echo "YAML linting completed with warnings"
+          yamllint . || echo "YAML linting completed with warnings"
 
       - name: Lint SQL files
         run: |
