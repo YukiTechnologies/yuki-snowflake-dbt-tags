@@ -94,7 +94,7 @@ check_version_consistency() {
             if [[ "$readme_version" == "$dbt_version" ]]; then
                 print_success "README.md version matches: $readme_version"
             else
-                print_error "README.md version mismatch: found '$readme_version', expected '$project_version'"
+                print_error "README.md version mismatch: found '$readme_version', expected '$dbt_version'"
                 inconsistencies=$((inconsistencies + 1))
             fi
         else
@@ -104,14 +104,14 @@ check_version_consistency() {
 
     # Search for any other mentions of the version in the codebase (excluding historical changelog entries)
     print_info "🔍 Searching for other version references..."
-    local other_versions=$(grep -r --exclude-dir=".git" --exclude-dir="target" --exclude-dir="dbt_packages" --exclude-dir=".history" --exclude-dir="logs" --exclude="*.backup" --exclude="CHANGELOG.md" --exclude="*.log" -h "[0-9]\+\.[0-9]\+\.[0-9]\+" . | grep -v "$project_version" | grep -E "0\.[0-9]+\.[0-9]+" | grep -v "require-dbt-version" | head -3)
+    local other_versions=$(grep -r --exclude-dir=".git" --exclude-dir="target" --exclude-dir="dbt_packages" --exclude-dir=".history" --exclude-dir="logs" --exclude="*.backup" --exclude="CHANGELOG.md" --exclude="*.log" -h "[0-9]\+\.[0-9]\+\.[0-9]\+" . | grep -v "$dbt_version" | grep -E "0\.[0-9]+\.[0-9]+" | grep -v "require-dbt-version" | head -3)
 
     if [[ -n "$other_versions" ]]; then
         print_warning "Found other version references that might need updating:"
         echo "$other_versions" | while read -r line; do
             print_warning "  → $line"
         done
-        print_info "  Please verify these are intentional or update them to match $project_version"
+        print_info "  Please verify these are intentional or update them to match $dbt_version"
     else
         print_success "No potentially inconsistent version references found"
     fi
