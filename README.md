@@ -70,7 +70,7 @@ To install this package, add the following entry to your `packages.yml` file in 
 ```yaml
 packages:
   - git: "https://github.com/YukiTechnologies/yuki-snowflake-dbt-tags.git"
-    revision: 0.2.3
+    revision: 0.2.4
 ```
 
 ## 🔧 Configuration

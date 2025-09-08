@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.4] - 2025-09-08
+
+### Improved
+- Enhanced project organization by moving manual test to `examples/` folder
+- Fixed yamllint compliance issues across all YAML files
+- Updated pre-commit configuration with latest SQLFluff version
+- Added comprehensive `.yamllint.yml` configuration
+- Improved GitHub Actions workflow syntax and reliability
+
+### Fixed
+- Resolved all yamllint document-start and truthy value warnings
+- Fixed SQLFluff deprecated option errors in pre-commit hooks
+- Corrected GitHub Actions workflow trigger syntax
+
 ## [0.2.3] - 2025-09-08
 
 ### Added

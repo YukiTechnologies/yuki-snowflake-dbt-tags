@@ -1,6 +1,6 @@
 ---
 name: 'yuki_snowflake_dbt_tags'
-version: '0.2.3'
+version: '0.2.4'
 config-version: 2
 
 # These configurations specify where dbt should look for different types of files.
