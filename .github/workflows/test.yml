@@ -1,10 +1,11 @@
+---
 name: Test Package
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop, prepare_for_publication]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -172,7 +173,8 @@ jobs:
       - name: Lint YAML files
         run: |
           echo "Linting YAML files..."
-          yamllint -d "{extends: default, rules: {line-length: {max: 120}, indentation: {spaces: 2}}}" . || echo "YAML linting completed with warnings"
+          yamllint -d "{extends: default, rules: {line-length: {max: 120}, \
+          indentation: {spaces: 2}}}" . || echo "YAML linting completed with warnings"
 
       - name: Lint SQL files
         run: |
@@ -191,7 +193,8 @@ jobs:
           EOF
 
           # Lint SQL files (non-blocking for now)
-          find . -name "*.sql" -not -path "./target/*" -not -path "./dbt_packages/*" | xargs sqlfluff lint || echo "SQL linting completed"
+          find . -name "*.sql" -not -path "./target/*" -not -path "./dbt_packages/*" | \
+          xargs sqlfluff lint || echo "SQL linting completed"
 
   security-check:
     runs-on: ubuntu-latest
@@ -219,7 +222,8 @@ jobs:
       - name: Check file permissions
         run: |
           echo "Checking file permissions..."
-          find . -type f -perm /o+w -not -path "./.git/*" -not -path "./target/*" -not -path "./dbt_packages/*" | while read file; do
+          find . -type f -perm /o+w -not -path "./.git/*" -not -path "./target/*" \
+          -not -path "./dbt_packages/*" | while read file; do
             echo "⚠️  World-writable file found: $file"
           done
           echo "✅ Permission check completed"
