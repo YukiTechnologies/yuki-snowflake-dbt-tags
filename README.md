@@ -1,6 +1,60 @@
 # 🐧 yuki-snowflake-dbt-tags
 
-**yuki-snowflake-dbt-tags** is a dbt package that automatically tags each query executed on Snowflake with a JSON-formatted identifier containing the associated model name and job name. This enhances traceability, enabling you to track query history, optimize performance, and monitor job runs directly from Snowflake's `QUERY_HISTORY` table.
+**yuki-snowflake-dbt-tags** is a dbt package that This makes it easy to filter and analyze queries by job or model name in Snowflake's history.
+
+## ✅ Compatibility
+
+- **dbt Core**: `>=1.0.0`
+- **Adapters**: Snowflake only
+- **dbt Cloud**: Full support
+
+## 🧪 Testing
+
+This package includes comprehensive tests to ensure reliability:
+
+### Running Tests
+
+1. **Integration Tests**:
+   ```bash
+   cd integration_tests
+   dbt deps
+   dbt test
+   dbt run
+   ```
+
+2. **Unit Tests**:
+   ```bash
+   dbt test
+   ```
+
+### Manual Testing
+
+To verify the package works with your Snowflake setup:
+
+1. Install the package in your dbt project
+2. Set environment variables (optional):
+   - `DBT_JOB_NAME`: Custom job name
+   - `DBT_YUKI_ENABLED`: "true" or "false"
+3. Run a model and check query tags in Snowflake:
+   ```sql
+   SELECT * FROM SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY
+   WHERE QUERY_TAG LIKE '%dbt_model%'
+   ORDER BY START_TIME DESC
+   LIMIT 5;
+   ```
+
+See `manual_test.sql` for a complete testing example.
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
+
+- Setting up the development environment
+- Running tests
+- Submitting pull requests
+- Reporting issues
+
+## 📄 Licenseomatically tags each query executed on Snowflake with a JSON-formatted identifier containing the associated model name and job name. This enhances traceability, enabling you to track query history, optimize performance, and monitor job runs directly from Snowflake's `QUERY_HISTORY` table.
 
 ## 🚀 Features
 

@@ -1,8 +1,9 @@
-name: 'yuki_snowflake_dbt_tags'
-version: '0.2.3'
+name: 'integration_tests'
+version: '1.0.0'
 config-version: 2
 
-# These configurations specify where dbt should look for different types of files.
+profile: 'integration_tests'
+
 model-paths: ["models"]
 analysis-paths: ["analyses"]
 test-paths: ["tests"]
@@ -10,16 +11,16 @@ seed-paths: ["data"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
 
-clean-targets:         # directories to be removed by `dbt clean`
+clean-targets:
   - "target"
   - "dbt_packages"
 
-# Specify dbt's version requirement
 require-dbt-version: [">=1.0.0"]
 
-# Configure package-specific settings
+# Configure dispatch to test the package
 dispatch:
   - macro_namespace: dbt
     search_order:
+      - integration_tests
       - yuki_snowflake_dbt_tags
       - dbt

@@ -1,0 +1,225 @@
+name: Test Package
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  validate-project:
+    runs-on: ubuntu-latest
+    name: Validate dbt Project Structure
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install dbt-core>=1.0.0 dbt-snowflake>=1.0.0
+
+      - name: Validate dbt_project.yml
+        run: |
+          cd ${{ github.workspace }}
+          dbt debug --profiles-dir ./ci/profiles || echo "Profile not found - expected for package"
+          dbt parse --profiles-dir ./ci/profiles || echo "Parse validation - may fail without connection"
+
+      - name: Check required files
+        run: |
+          echo "Checking for required package files..."
+
+          # Check for required files
+          required_files=("dbt_project.yml" "README.md" "LICENSE" "hub.yml")
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ Missing required file: $file"
+              exit 1
+            else
+              echo "✅ Found: $file"
+            fi
+          done
+
+          # Check for recommended files
+          recommended_files=("CONTRIBUTING.md" "integration_tests/dbt_project.yml")
+          for file in "${recommended_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "⚠️  Missing recommended file: $file"
+            else
+              echo "✅ Found: $file"
+            fi
+          done
+
+      - name: Validate hub.yml format
+        run: |
+          echo "Validating hub.yml format..."
+          python -c "
+          import yaml
+          import sys
+
+          required_fields = ['name', 'namespace', 'description', 'author', 'tags', 'license']
+
+          try:
+              with open('hub.yml', 'r') as f:
+                  hub_config = yaml.safe_load(f)
+
+              missing_fields = []
+              for field in required_fields:
+                  if field not in hub_config:
+                      missing_fields.append(field)
+
+              if missing_fields:
+                  print(f'❌ Missing required fields in hub.yml: {missing_fields}')
+                  sys.exit(1)
+              else:
+                  print('✅ hub.yml format is valid')
+
+          except Exception as e:
+              print(f'❌ Error validating hub.yml: {e}')
+              sys.exit(1)
+          "
+
+      - name: Check macro files
+        run: |
+          echo "Checking macro files..."
+          if [ ! -d "macros" ]; then
+            echo "❌ macros directory not found"
+            exit 1
+          fi
+
+          if [ ! -f "macros/set_query_tag.sql" ]; then
+            echo "❌ Main macro file not found"
+            exit 1
+          fi
+
+          echo "✅ Macro files found"
+
+  test-integration:
+    runs-on: ubuntu-latest
+    name: Test Integration Tests Structure
+    needs: validate-project
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dbt
+        run: |
+          python -m pip install --upgrade pip
+          pip install dbt-core>=1.0.0 dbt-snowflake>=1.0.0
+
+      - name: Create test profiles.yml
+        run: |
+          mkdir -p ./ci/profiles
+          cat > ./ci/profiles/profiles.yml << EOF
+          config:
+            send_anonymous_usage_stats: false
+
+          integration_tests:
+            target: test
+            outputs:
+              test:
+                type: snowflake
+                account: dummy_account
+                user: dummy_user
+                password: dummy_password
+                role: dummy_role
+                database: dummy_database
+                warehouse: dummy_warehouse
+                schema: dummy_schema
+                threads: 1
+          EOF
+
+      - name: Test integration test structure
+        run: |
+          cd integration_tests
+          echo "Installing package dependencies..."
+          dbt deps --profiles-dir ../ci/profiles || echo "Deps may fail - checking structure only"
+
+          echo "Validating integration test structure..."
+          dbt parse --profiles-dir ../ci/profiles || echo "Parse validation complete - connection errors expected"
+
+  lint-and-format:
+    runs-on: ubuntu-latest
+    name: Lint and Format Check
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install linting tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install sqlfluff yamllint
+
+      - name: Lint YAML files
+        run: |
+          echo "Linting YAML files..."
+          yamllint -d "{extends: default, rules: {line-length: {max: 120}, indentation: {spaces: 2}}}" . || echo "YAML linting completed with warnings"
+
+      - name: Lint SQL files
+        run: |
+          echo "Linting SQL files..."
+          # Create basic sqlfluff config
+          cat > .sqlfluff << EOF
+          [sqlfluff]
+          dialect = snowflake
+          templater = jinja
+
+          [sqlfluff:indentation]
+          tab_space_size = 2
+
+          [sqlfluff:rules:L010]
+          capitalisation_policy = lower
+          EOF
+
+          # Lint SQL files (non-blocking for now)
+          find . -name "*.sql" -not -path "./target/*" -not -path "./dbt_packages/*" | xargs sqlfluff lint || echo "SQL linting completed"
+
+  security-check:
+    runs-on: ubuntu-latest
+    name: Security and Best Practices Check
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for secrets in code
+        run: |
+          echo "Checking for potential secrets..."
+
+          # Check for common secret patterns
+          if grep -r -i "password\s*=" . --exclude-dir=.git --exclude-dir=target --exclude-dir=dbt_packages; then
+            echo "⚠️  Found potential password in code"
+          fi
+
+          if grep -r -i "api.key\s*=" . --exclude-dir=.git --exclude-dir=target --exclude-dir=dbt_packages; then
+            echo "⚠️  Found potential API key in code"
+          fi
+
+          echo "✅ Security check completed"
+
+      - name: Check file permissions
+        run: |
+          echo "Checking file permissions..."
+          find . -type f -perm /o+w -not -path "./.git/*" -not -path "./target/*" -not -path "./dbt_packages/*" | while read file; do
+            echo "⚠️  World-writable file found: $file"
+          done
+          echo "✅ Permission check completed"

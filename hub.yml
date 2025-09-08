@@ -1,0 +1,12 @@
+name: 'yuki-snowflake-dbt-tags'
+namespace: 'yuki_technologies'
+description: 'Automatically tags each query executed on Snowflake with JSON-formatted identifiers containing model names, job names, and other metadata for enhanced traceability and performance monitoring.'
+author: 'Yuki Technologies'
+email: 'support@yukidata.com'
+website: 'https://www.yukidata.com'
+github: 'https://github.com/YukiTechnologies/yuki-snowflake-dbt-tags'
+tags: ['snowflake', 'query', 'tagging', 'monitoring', 'performance', 'traceability']
+license: 'MIT'
+require-dbt-version: '>=1.0.0'
+supported-adapters: ['snowflake']
+keywords: ['snowflake', 'query tagging', 'monitoring', 'performance optimization', 'dbt macros']

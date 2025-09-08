@@ -1,0 +1,30 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+        files: \.(md|yml|yaml|sql)$
+      - id: end-of-file-fixer
+        files: \.(md|yml|yaml|sql)$
+      - id: check-yaml
+        args: [--unsafe]
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.32.0
+    hooks:
+      - id: yamllint
+        args: [-d, "{extends: default, rules: {line-length: {max: 120}, indentation: {spaces: 2}}}"]
+
+  - repo: https://github.com/sqlfluff/sqlfluff
+    rev: 2.3.2
+    hooks:
+      - id: sqlfluff-lint
+        args: [--dialect, snowflake, --templater, jinja]
+        additional_dependencies: ['dbt-snowflake>=1.0.0']
+      - id: sqlfluff-fix
+        args: [--dialect, snowflake, --templater, jinja]
+        additional_dependencies: ['dbt-snowflake>=1.0.0']
