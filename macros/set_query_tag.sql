@@ -37,7 +37,8 @@
     "dbt_enabled": env_var("DBT_YUKI_ENABLED", "true") | lower == "true",
     "invocation_id": invocation_id,
     "run_cmd": flags.WHICH,
-    "resource_type": model.resource_type
+    "resource_type": model.resource_type,
+    "target_name": target.name,
   }) %}
 
   {# Set full_refresh and materialization query tag for models only (not tests, seeds, etc.) #}
