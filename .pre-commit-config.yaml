@@ -18,14 +18,14 @@ repos:
     rev: v1.32.0
     hooks:
       - id: yamllint
-        args: [-d, "{extends: default, rules: {line-length: {max: 120}, indentation: {spaces: 2}}}"]
+        args: [-c, .yamllint.yml]
 
   - repo: https://github.com/sqlfluff/sqlfluff
-    rev: 2.3.2
+    rev: 3.0.0
     hooks:
       - id: sqlfluff-lint
         args: [--dialect, snowflake, --templater, jinja]
         additional_dependencies: ['dbt-snowflake>=1.0.0']
       - id: sqlfluff-fix
-        args: [--dialect, snowflake, --templater, jinja]
+        args: [--dialect, snowflake, --templater, jinja, --force]
         additional_dependencies: ['dbt-snowflake>=1.0.0']
