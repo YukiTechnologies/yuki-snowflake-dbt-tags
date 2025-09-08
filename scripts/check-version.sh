@@ -76,7 +76,7 @@ check_changelog_date() {
 get_readme_version() {
     if [[ -f "README.md" ]]; then
         # Look for revision field in packages.yml installation examples
-        grep -A1 "revision:" README.md | grep "revision:" | sed 's/.*revision: *\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/' | head -1
+        grep -A1 "revision:" README.md | grep "revision:" | sed 's/.*revision: *\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/' | head -1
     fi
 }
 
@@ -104,7 +104,54 @@ check_version_consistency() {
 
     # Search for any other mentions of the version in the codebase (excluding historical changelog entries)
     print_info "🔍 Searching for other version references..."
-    local other_versions=$(grep -r --exclude-dir=".git" --exclude-dir="target" --exclude-dir="dbt_packages" --exclude-dir=".history" --exclude-dir="logs" --exclude="*.backup" --exclude="CHANGELOG.md" --exclude="*.log" -h "[0-9]\+\.[0-9]\+\.[0-9]\+" . | grep -v "$dbt_version" | grep -E "0\.[0-9]+\.[0-9]+" | grep -v "require-dbt-version" | head -3)
+    # Refactored version search for clarity and maintainability
+    find_other_version_references() {
+        local current_version=$1
+        local exclude_dirs=(.git target dbt_packages .history logs)
+        local exclude_files=("*.backup" "CHANGELOG.md" "*.log")
+
+        # Build find command exclude arguments
+        local find_exclude_args=()
+        for dir in "${exclude_dirs[@]}"; do
+            find_exclude_args+=(-path "./$dir" -prune -o)
+        done
+
+        # Find all files except excluded directories and files
+        local files_to_search=$(find . "${find_exclude_args[@]}" -type f -name "*.yml" -o -name "*.yaml" -o -name "*.md" -o -name "*.py" -o -name "*.sql" 2>/dev/null | grep -vE "($(IFS='|'; echo "${exclude_files[*]//\*/.*}"))")
+
+        # Search for version patterns in found files
+        local version_pattern="[0-9]\+\.[0-9]\+\.[0-9]\+"
+        local all_versions=""
+
+        if [[ -n "$files_to_search" ]]; then
+            all_versions=$(echo "$files_to_search" | xargs grep -l "$version_pattern" 2>/dev/null | xargs grep -h "$version_pattern" 2>/dev/null || true)
+        fi
+
+        # Filter out current version and irrelevant references
+        local filtered_versions=$(echo "$all_versions" | grep -v "$current_version" | grep -E "0\.[0-9]+\.[0-9]+" | grep -v "require-dbt-version" | head -3)
+
+        echo "$filtered_versions"
+    }
+
+    local other_versions=$(find_other_version_references "$dbt_version")
+    local exclude_dirs=(.git target dbt_packages .history logs)
+    local exclude_files=("*.backup" "CHANGELOG.md" "*.log")
+    local grep_exclude_args=()
+    for dir in "${exclude_dirs[@]}"; do
+        grep_exclude_args+=(--exclude-dir="$dir")
+    done
+    for file in "${exclude_files[@]}"; do
+        grep_exclude_args+=(--exclude="$file")
+    done
+    # Find all version strings, excluding specified dirs/files
+    local version_pattern="[0-9]\+\.[0-9]\+\.[0-9]\+"
+    local all_versions=$(grep -r "${grep_exclude_args[@]}" -h "$version_pattern" .)
+    # Filter out the current version
+    local filtered_versions=$(echo "$all_versions" | grep -v "$dbt_version")
+    # Only keep lines matching the major version pattern
+    local major_versions=$(echo "$filtered_versions" | grep -E "0\.[0-9]+\.[0-9]+")
+    # Exclude lines containing 'require-dbt-version'
+    local other_versions=$(echo "$major_versions" | grep -v "require-dbt-version" | head -3)
 
     if [[ -n "$other_versions" ]]; then
         print_warning "Found other version references that might need updating:"

@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
@@ -131,7 +131,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
@@ -182,7 +182,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
@@ -224,16 +224,33 @@ jobs:
         run: |
           echo "Checking for potential secrets..."
 
-          # Check for common secret patterns
-          if grep -r -i "password\s*=" . --exclude-dir=.git \
-            --exclude-dir=target --exclude-dir=dbt_packages; then
-            echo "⚠️  Found potential password in code"
-          fi
+          # Install gitleaks for proper secret detection
+          curl -sSfL https://github.com/zricethezav/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz | tar -xz
+          chmod +x gitleaks
 
-          if grep -r -i "api.key\s*=" . --exclude-dir=.git \
-            --exclude-dir=target --exclude-dir=dbt_packages; then
-            echo "⚠️  Found potential API key in code"
-          fi
+          # Create gitleaks config to reduce false positives
+          cat > .gitleaks.toml << 'EOF'
+          [extend]
+          useDefault = true
+
+          [[rules]]
+          id = "exclude-documentation"
+          description = "Exclude documentation files"
+          path = '''(?i)(README\.md|\.md|\.rst|\.txt|docs/)'''
+          tags = ["documentation"]
+
+          [[rules]]
+          id = "exclude-test-fixtures"
+          description = "Exclude test fixture files"
+          path = '''(?i)(test|spec|fixture|example|sample|mock|dummy)'''
+          tags = ["test"]
+          EOF
+
+          # Run gitleaks scan
+          ./gitleaks detect --config .gitleaks.toml --verbose --no-git || {
+            echo "⚠️  Potential secrets detected. Please review the findings above."
+            echo "If these are false positives, consider updating .gitleaks.toml"
+          }
 
           echo "✅ Security check completed"
 
