@@ -1,7 +1,8 @@
+---
 name: Pre-commit
 
 on:
-  pull_request:
+  pull_request: true
   push:
     branches: [main, develop]
 

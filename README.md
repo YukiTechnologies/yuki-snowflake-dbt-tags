@@ -32,7 +32,7 @@ This package includes comprehensive tests to ensure reliability:
 To verify the package works with your Snowflake setup:
 
 1. Install the package in your dbt project
-2. Set environment variables (optional):
+2. Set environment variables:
    - `DBT_JOB_NAME`: Custom job name
    - `DBT_YUKI_ENABLED`: "true" or "false"
 3. Run a model and check query tags in Snowflake:
