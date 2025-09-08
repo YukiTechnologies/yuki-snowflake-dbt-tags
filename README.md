@@ -16,7 +16,7 @@ To install this package, add the following entry to your `packages.yml` file in 
 ```yaml
 packages:
   - git: "https://github.com/YukiTechnologies/yuki-snowflake-dbt-tags.git"
-    revision: 0.2.1
+    revision: 0.2.3
 ```
 
 ## 🔧 Configuration
@@ -69,6 +69,7 @@ This configuration ensures that the job uses the original warehouse size while b
 {
   "dbt_job": "your_job_name",
   "dbt_model": "your_model_name",
+  "dbt_target": "prod",
   "invocation_id": "c5faa810-9e05-44d9-b00e-6a1bfbc82431",
   "run_cmd": "build",
   "resource_type": "model",
