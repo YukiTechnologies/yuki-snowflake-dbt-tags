@@ -43,7 +43,7 @@ To verify the package works with your Snowflake setup:
    LIMIT 5;
    ```
 
-See `manual_test.sql` for a complete testing example.
+See `examples/manual_test.sql` for a complete testing example.
 
 ## 🤝 Contributing
 
