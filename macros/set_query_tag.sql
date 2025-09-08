@@ -40,10 +40,11 @@
     "resource_type": model.resource_type
   }) %}
 
-  {# Set full_refresh query tag for models only (not tests) #}
+  {# Set full_refresh and materialization query tag for models only (not tests, seeds, etc.) #}
   {% if model.resource_type == 'model' %}
     {%- do query_tag.update(
-      full_refresh=not is_incremental()
+      full_refresh=not is_incremental(),
+      materialization=model.config.materialized
     ) -%}
   {% endif %}
 
