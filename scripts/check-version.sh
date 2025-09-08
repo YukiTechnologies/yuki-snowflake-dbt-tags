@@ -134,24 +134,6 @@ check_version_consistency() {
     }
 
     local other_versions=$(find_other_version_references "$dbt_version")
-    local exclude_dirs=(.git target dbt_packages .history logs)
-    local exclude_files=("*.backup" "CHANGELOG.md" "*.log")
-    local grep_exclude_args=()
-    for dir in "${exclude_dirs[@]}"; do
-        grep_exclude_args+=(--exclude-dir="$dir")
-    done
-    for file in "${exclude_files[@]}"; do
-        grep_exclude_args+=(--exclude="$file")
-    done
-    # Find all version strings, excluding specified dirs/files
-    local version_pattern="[0-9]\+\.[0-9]\+\.[0-9]\+"
-    local all_versions=$(grep -r "${grep_exclude_args[@]}" -h "$version_pattern" .)
-    # Filter out the current version
-    local filtered_versions=$(echo "$all_versions" | grep -v "$dbt_version")
-    # Only keep lines matching the major version pattern
-    local major_versions=$(echo "$filtered_versions" | grep -E "0\.[0-9]+\.[0-9]+")
-    # Exclude lines containing 'require-dbt-version'
-    local other_versions=$(echo "$major_versions" | grep -v "require-dbt-version" | head -3)
 
     if [[ -n "$other_versions" ]]; then
         print_warning "Found other version references that might need updating:"
