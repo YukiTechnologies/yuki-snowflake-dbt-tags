@@ -6,7 +6,7 @@ on:
     branches: [main, develop, prepare_for_publication]
   pull_request:
     branches: [main]
-  workflow_dispatch:
+  workflow_dispatch: {}
 
 jobs:
   validate-project:
