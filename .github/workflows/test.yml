@@ -27,20 +27,31 @@ jobs:
           python -m pip install --upgrade pip
           pip install dbt-core>=1.0.0 dbt-snowflake>=1.0.0
 
-      - name: Validate dbt_project.yml
+      - name: Validate macro package structure
         run: |
-          cd ${{ github.workspace }}
-          dbt debug --profiles-dir ./ci/profiles || \
-            echo "Profile not found - expected for package"
-          dbt parse --profiles-dir ./ci/profiles || \
-            echo "Parse validation - may fail without connection"
+          echo "Validating macro package structure..."
+
+          # For macro-only packages, validate in integration_tests directory
+          if [ -d "integration_tests" ]; then
+            cd integration_tests
+            echo "✅ Integration tests directory found"
+            if [ -f "dbt_project.yml" ]; then
+              echo "✅ Integration tests dbt_project.yml found"
+            else
+              echo "❌ Missing integration_tests/dbt_project.yml"
+              exit 1
+            fi
+          else
+            echo "❌ Missing integration_tests directory"
+            exit 1
+          fi
 
       - name: Check required files
         run: |
           echo "Checking for required package files..."
 
-          # Check for required files
-          required_files=("dbt_project.yml" "README.md" "LICENSE" "hub.yml")
+          # Check for required files (macro-only package structure)
+          required_files=("README.md" "LICENSE" "hub.yml" "macros/set_query_tag.sql")
           for file in "${required_files[@]}"; do
             if [ ! -f "$file" ]; then
               echo "❌ Missing required file: $file"
