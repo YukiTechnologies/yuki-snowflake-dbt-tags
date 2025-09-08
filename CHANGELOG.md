@@ -8,16 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.4] - 2025-09-08
 
 ### Improved
-- Enhanced project organization by moving manual test to `examples/` folder
-- Fixed yamllint compliance issues across all YAML files
+- Streamlined project to minimal dbt Hub package structure
 - Updated pre-commit configuration with latest SQLFluff version
-- Added comprehensive `.yamllint.yml` configuration
 - Improved GitHub Actions workflow syntax and reliability
+- Simplified package structure removing non-essential files
 
 ### Fixed
-- Resolved all yamllint document-start and truthy value warnings
 - Fixed SQLFluff deprecated option errors in pre-commit hooks
 - Corrected GitHub Actions workflow trigger syntax
+- Removed redundant files and configurations
+
+### Removed
+- Removed examples/ folder for minimal package structure
+- Removed complex development tooling files
+- Removed tests/ and models/ directories (not needed for macro packages)
+- Simplified configuration to focus on core functionality
 
 ## [0.2.3] - 2025-09-08
 

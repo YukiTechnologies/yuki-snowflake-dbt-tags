@@ -9,5 +9,8 @@ package-lock.yml
 .python-version
 manifest.json
 
- # VSCode
+# macOS
+.DS_Store
+
+# VSCode
 .vscode
