@@ -1,0 +1,38 @@
+---
+version: 2
+
+macros:
+  - name: set_query_tag
+    description: |
+      Automatically sets query tags for Snowflake queries with JSON-formatted metadata
+      including model name, job name, and other contextual information.
+
+      This macro generates a JSON query tag with the following fields:
+      - `dbt_job`: Job name from DBT_JOB_NAME environment variable
+      - `dbt_model`: Name of the current dbt model
+      - `dbt_enabled`: Whether Yuki tagging is enabled (from DBT_YUKI_ENABLED)
+      - `dbt_target`: The current dbt target name
+      - `invocation_id`: Unique identifier for the dbt run
+      - `run_cmd`: The dbt command being executed (run, build, test, etc.)
+      - `resource_type`: Type of dbt resource (model, test, seed, etc.)
+      - `full_refresh`: Boolean indicating if this is a full refresh (models only)
+      - `materialization`: The materialization type (models only)
+    arguments:
+      - name: extra
+        type: dict
+        description: Additional key-value pairs to include in the query tag (optional)
+
+  - name: unset_query_tag
+    description: |
+      Resets the Snowflake query tag to its original value after a model has been materialized.
+      This macro is typically called automatically by dbt after model materialization to clean up the session state.
+    arguments:
+      - name: original_query_tag
+        type: string
+        description: The original query tag to restore
+
+  - name: default__set_query_tag
+    description: Default implementation of set_query_tag for Snowflake adapter
+
+  - name: default__unset_query_tag
+    description: Default implementation of unset_query_tag for Snowflake adapter

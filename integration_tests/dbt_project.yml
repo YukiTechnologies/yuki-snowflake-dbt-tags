@@ -1,0 +1,23 @@
+---
+name: 'integration_tests'
+version: '1.0.0'
+config-version: 2
+
+profile: 'integration_tests'
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+require-dbt-version: [">=1.0.0"]
+
+# Configure dispatch to test the package
+dispatch:
+  - macro_namespace: dbt
+    search_order:
+      - integration_tests
+      - yuki_snowflake_dbt_tags
+      - dbt
