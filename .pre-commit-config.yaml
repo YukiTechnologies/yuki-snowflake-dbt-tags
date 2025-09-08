@@ -23,3 +23,13 @@ repos:
       - id: sqlfluff-fix
         args: [--dialect, snowflake, --templater, jinja, --force]
         additional_dependencies: ['dbt-snowflake>=1.0.0']
+
+  - repo: local
+    hooks:
+      - id: check-release-version
+        name: Check Release Version
+        entry: ./scripts/check-version.sh
+        language: script
+        files: ^(hub\.yml|dbt_project\.yml|CHANGELOG\.md|README\.md)$
+        pass_filenames: false
+        description: Validates version consistency and changelog entries for releases

@@ -47,6 +47,29 @@ To verify the package works with your Snowflake setup:
 
 We welcome contributions! Please submit issues and pull requests to help improve this package.
 
+### Development
+
+This project uses pre-commit hooks to ensure code quality and release consistency:
+
+1. **Install pre-commit**:
+   ```bash
+   pip install pre-commit
+   pre-commit install
+   ```
+
+2. **Version Management**:
+   - The project includes a version check script at `scripts/check-version.sh`
+   - This script validates:
+     - Semantic versioning format in `dbt_project.yml`
+     - Corresponding changelog entry in `CHANGELOG.md`
+     - Date format in changelog entries
+     - Consistency across project files
+
+3. **Release Process**:
+   - Update version in `dbt_project.yml`
+   - Add corresponding entry to `CHANGELOG.md` with format: `## [x.y.z] - YYYY-MM-DD`
+   - Pre-commit hooks will automatically validate version consistency
+
 ## 📄 Licenseomatically tags each query executed on Snowflake with a JSON-formatted identifier containing the associated model name and job name. This enhances traceability, enabling you to track query history, optimize performance, and monitor job runs directly from Snowflake's `QUERY_HISTORY` table.
 
 ## 🚀 Features

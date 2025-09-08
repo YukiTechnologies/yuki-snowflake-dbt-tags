@@ -1,5 +1,6 @@
 ---
 name: 'yuki-snowflake-dbt-tags'
+version: '0.2.4'
 namespace: 'yuki_technologies'
 description: >-
   Automatically tags each query executed on Snowflake with JSON-formatted
