@@ -1,6 +1,6 @@
 # 🐧 yuki-snowflake-dbt-tags
 
-**yuki-snowflake-dbt-tags** is a dbt package that This makes it easy to filter and analyze queries by job or model name in Snowflake's history.
+**yuki-snowflake-dbt-tags** is a dbt package that automatically tags each query executed on Snowflake with JSON-formatted identifiers. This makes it easy to filter and analyze queries by job or model name in Snowflake's history.
 
 ## ✅ Compatibility
 
