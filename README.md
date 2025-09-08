@@ -43,16 +43,9 @@ To verify the package works with your Snowflake setup:
    LIMIT 5;
    ```
 
-See `examples/manual_test.sql` for a complete testing example.
-
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
-
-- Setting up the development environment
-- Running tests
-- Submitting pull requests
-- Reporting issues
+We welcome contributions! Please submit issues and pull requests to help improve this package.
 
 ## 📄 Licenseomatically tags each query executed on Snowflake with a JSON-formatted identifier containing the associated model name and job name. This enhances traceability, enabling you to track query history, optimize performance, and monitor job runs directly from Snowflake's `QUERY_HISTORY` table.
 
