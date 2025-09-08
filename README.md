@@ -70,8 +70,13 @@ This project uses pre-commit hooks to ensure code quality and release consistenc
    - Add corresponding entry to `CHANGELOG.md` with format: `## [x.y.z] - YYYY-MM-DD`
    - Pre-commit hooks will automatically validate version consistency
 
-## 📄 Licenseomatically tags each query executed on Snowflake with a JSON-formatted identifier containing the associated model name and job name. This enhances traceability, enabling you to track query history, optimize performance, and monitor job runs directly from Snowflake's `QUERY_HISTORY` table.
+## 📄 License
 
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
+## ⚙️ How it works
+
+This package automatically tags each query executed on Snowflake with a JSON-formatted identifier containing the associated model name and job name. This enhances traceability, enabling you to track query history, optimize performance, and monitor job runs directly from Snowflake's `QUERY_HISTORY` table.
 ## 🚀 Features
 
 - Automatically tags each query with a unique identifier in JSON format.
