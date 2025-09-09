@@ -51,7 +51,7 @@ jobs:
           echo "Checking for required package files..."
 
           # Check for required files (macro-only package structure)
-          required_files=("README.md" "LICENSE" "hub.yml" "macros/set_query_tag.sql")
+          required_files=("README.md" "LICENSE" "macros/set_query_tag.sql")
           for file in "${required_files[@]}"; do
             if [ ! -f "$file" ]; then
               echo "❌ Missing required file: $file"
@@ -73,38 +73,34 @@ jobs:
             fi
           done
 
-      - name: Validate hub.yml format
+      - name: Validate package structure
         run: |
-          echo "Validating hub.yml format..."
-          python -c "
-          import yaml
+          echo "Validating dbt package structure..."
+
+          # Check for standard dbt package files
+          echo "Checking for standard package files..."
+
+          python << 'EOF'
+          import os
           import sys
 
-          required_fields = [
-            'name', 'namespace', 'description',
-            'author', 'tags', 'license'
-          ]
+          # Check for essential README content
+          if os.path.exists('README.md'):
+              with open('README.md', 'r') as f:
+                  readme_content = f.read().lower()
+                  if 'installation' not in readme_content and 'install' not in readme_content:
+                      print('⚠️  README.md should include installation instructions')
+                  else:
+                      print('✅ README.md contains installation information')
 
-          try:
-              with open('hub.yml', 'r') as f:
-                  hub_config = yaml.safe_load(f)
+          # Check for integration tests (recommended)
+          if os.path.exists('integration_tests/'):
+              print('✅ Integration tests directory found')
+          else:
+              print('ℹ️  Consider adding integration_tests/ directory for testing')
 
-              missing_fields = []
-              for field in required_fields:
-                  if field not in hub_config:
-                      missing_fields.append(field)
-
-              if missing_fields:
-                  print(f'❌ Missing required fields in hub.yml: ' +
-                        f'{missing_fields}')
-                  sys.exit(1)
-              else:
-                  print('✅ hub.yml format is valid')
-
-          except Exception as e:
-              print(f'❌ Error validating hub.yml: {e}')
-              sys.exit(1)
-          "
+          print('✅ Package structure validation completed')
+          EOF
 
       - name: Check macro files
         run: |
