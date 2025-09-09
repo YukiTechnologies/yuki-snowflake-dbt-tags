@@ -30,6 +30,6 @@ repos:
         name: Check Release Version
         entry: ./scripts/check-version.sh
         language: script
-        files: ^(hub\.yml|dbt_project\.yml|CHANGELOG\.md|README\.md)$
+        files: ^(dbt_project\.yml|CHANGELOG\.md|README\.md)$
         pass_filenames: false
         description: Validates version consistency and changelog entries for releases
