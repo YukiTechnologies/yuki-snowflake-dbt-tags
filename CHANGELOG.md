@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Simplified integration test models to be more focused and minimal
+- Streamlined CI workflow configuration following best practices from established dbt packages
+- Removed unnecessary complexity from test SQL models
+
 ### Removed
 - Removed SQLFluff configuration from pre-commit hooks
 - Simplified linting setup since package contains minimal SQL files
