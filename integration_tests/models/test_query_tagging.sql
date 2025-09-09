@@ -1,7 +1,7 @@
 -- Test model to verify the query tagging functionality
-{{ config(materialized='table') }}
+{{ config(
+    materialized='table',
+    meta={'test_type': 'query_tagging'}
+) }}
 
-select
-    1 as id,
-    'test_value' as test_column,
-    current_timestamp() as created_at
+select 1 as test_id

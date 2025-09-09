@@ -5,7 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.4] - 2025-09-08
+## [Unreleased]
+
+### Changed
+- Simplified integration test models to be more focused and minimal
+- Streamlined CI workflow configuration following best practices from established dbt packages
+- Removed unnecessary complexity from test SQL models
+
+### Removed
+- Removed SQLFluff configuration from pre-commit hooks
+- Simplified linting setup since package contains minimal SQL files
+
+## [0.2.5] - 2025-09-08
 
 ### Improved
 - Streamlined project to minimal dbt Hub package structure

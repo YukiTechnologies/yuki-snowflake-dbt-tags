@@ -1,0 +1,5 @@
+name: 'yuki_snowflake_dbt_tags'
+version: '0.2.5'
+config-version: 2
+
+require-dbt-version: ">=1.0.0"
