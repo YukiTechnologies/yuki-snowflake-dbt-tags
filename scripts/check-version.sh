@@ -28,10 +28,11 @@ print_info() {
     echo -e "$1"
 }
 
-# Extract version from dbt_project.yml (for dbt projects) or package release tags
+# Extract version from root dbt_project.yml only (exclude integration_tests)
 get_project_version() {
     if [[ -f "dbt_project.yml" ]]; then
-        grep "^version:" dbt_project.yml | sed "s/version: *['\"]\\([^'\"]*\\)['\"].*/\\1/"
+        # Only look at the root dbt_project.yml, not integration_tests/dbt_project.yml
+        grep "^version:" ./dbt_project.yml | sed "s/version: *['\"]\\([^'\"]*\\)['\"].*/\\1/"
     else
         # For dbt packages, we rely on GitHub releases - return empty for now
         echo ""
@@ -75,7 +76,7 @@ check_changelog_date() {
 get_readme_version() {
     if [[ -f "README.md" ]]; then
         # Look for revision field in packages.yml installation examples
-        grep -A1 "revision:" README.md | grep "revision:" | sed 's/.*revision: *\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/' | head -1
+        grep "revision:" README.md | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+' | head -1
     fi
 }
 
@@ -84,7 +85,7 @@ check_version_consistency() {
     local dbt_version=$1
     local inconsistencies=0
 
-    print_info "🔍 Checking version consistency across files..."
+    print_info "Checking version consistency across files..."
 
     # Check README.md version
     if [[ -f "README.md" ]]; then
@@ -102,11 +103,11 @@ check_version_consistency() {
     fi
 
     # Search for any other mentions of the version in the codebase (excluding historical changelog entries)
-    print_info "🔍 Searching for other version references..."
+    print_info "Searching for other version references..."
     # Refactored version search for clarity and maintainability
     find_other_version_references() {
         local current_version=$1
-        local exclude_dirs=(.git target dbt_packages .history logs)
+        local exclude_dirs=(.git target dbt_packages .history logs integration_tests)
         local exclude_files=("*.backup" "CHANGELOG.md" "*.log")
 
         # Build find command exclude arguments
@@ -161,7 +162,7 @@ check_version_consistency() {
 
 # Main validation function
 main() {
-    print_info "🔍 Starting release version validation..."
+    print_info "Starting release version validation..."
 
     # Check if we're in a dbt package or dbt project directory
     if [[ ! -f "dbt_project.yml" && ! -f "README.md" ]]; then
@@ -178,7 +179,7 @@ main() {
         VERSION_FILE="GitHub releases"
     fi
 
-    print_info "📦 Detected: $PROJECT_TYPE (using $VERSION_FILE)"
+    print_info "Detected: $PROJECT_TYPE (using $VERSION_FILE)"
 
     # Get version from the appropriate file
     PROJECT_VERSION=$(get_project_version)
@@ -188,7 +189,7 @@ main() {
         print_info "For dbt packages, version is managed via GitHub releases"
         print_info "Please ensure you have tagged releases in your repository"
         # For now, we'll skip version validation for packages
-        print_success "🎉 Package structure validation passed!"
+        print_success "Package structure validation passed!"
         print_info "Ready for dbt Hub submission"
         exit 0
     fi
@@ -231,7 +232,7 @@ main() {
 
     # Check if dbt_project.yml exists and validate require-dbt-version
     if [[ -f "dbt_project.yml" ]]; then
-        print_info "📦 Validating dbt_project.yml..."
+        print_info "Validating dbt_project.yml..."
         if grep -q "require-dbt-version:" dbt_project.yml; then
             print_success "dbt_project.yml contains require-dbt-version field"
         else
@@ -264,7 +265,7 @@ main() {
         fi
     fi
 
-    print_success "🎉 All version checks passed!"
+    print_success "All version checks passed!"
     print_info "Ready for release: v$PROJECT_VERSION"
 }
 
