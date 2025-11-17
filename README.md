@@ -36,25 +36,25 @@ dispatch:
 1.	Navigate to: Deploy -> Environments -> Environments Variables.
 2.	Click Add variable.
 3.	Fill in the following details:
-•	Key: DBT_JOB_NAME
-•	Project default: default_job
+
+&nbsp;&nbsp;- Key: `DBT_JOB_NAME`
+&nbsp;&nbsp;- Project default: default_job
+
 4.	Click Save.
 
 Next, configure the job-specific override:
 1.	Go to: Deploy -> Jobs and select the relevant job.
 2.	Navigate to Settings -> Advanced Settings -> Environment Variables.
-3.	Locate DBT_JOB_NAME and define a Job override (this should be the job name).
-•	This job name will be reflected in the Yuki UI.
+3.	Locate `DBT_JOB_NAME` and define a Job override  - this should be the job name.	This job name will be reflected in the Yuki UI.
 
 This custom job name will appear in your query tags, making it easier to identify and track specific jobs in the Snowflake query history.
 
 ## 🌟 Enforce Original Warehouse Size
 
-If you have a use case where you want the job to run on the original warehouse size connected to dbt, you can disable Yuki for a specific run. To do this:
-1.	Add an environment variable (similar to the steps for DBT_JOB_NAME) with the following details:
-•	Key: DBT_YUKI_ENABLED
-•	Project default: True (default value)
-2.	If you have a job that needs to run on the original warehouse size, override the value to False at the job level.
+If you have a use case where you want the job to run on the original warehouse size connected to dbt, you can disable Yuki for a specific run. To do this add an environment variable (similar to the steps for DBT_JOB_NAME) with the following details:
+
+&nbsp;&nbsp;- Key: `DBT_YUKI_ENABLED`
+&nbsp;&nbsp;- Value: `False`
 
 This configuration ensures that the job uses the original warehouse size while bypassing Yuki optimizations.
 
@@ -78,6 +78,26 @@ This configuration ensures that the job uses the original warehouse size while b
 ```
 
 This makes it easy to filter and analyze queries by job or model name in Snowflake’s history.
+
+## ➕ Custom Query Tag Extensions
+
+Use the `extra` kwarg on `set_query_tag` to add your own key/value pairs while keeping the  tags from this package.
+
+```jinja
+{% macro set_query_tag() -%}
+  {% do return(dbt_snowflake_query_tags.set_query_tag(
+    extra={
+      'custom_config_property': config.get('custom_config_property'),
+    }
+  )) %}
+{% endmacro %}
+
+{% macro unset_query_tag(original_query_tag) -%}
+  {% do return(dbt_snowflake_query_tags.unset_query_tag(original_query_tag)) %}
+{% endmacro %}
+```
+
+Calling the package macros keeps the built-in metadata and simply adds your custom fields.
 
 ## 📄 License
 This package is open-source under the MIT License. See the LICENSE file for details.
