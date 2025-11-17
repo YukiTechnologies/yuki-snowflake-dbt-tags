@@ -85,7 +85,7 @@ Use the `extra` kwarg on `set_query_tag` to add your own key/value pairs while k
 
 ```jinja
 {% macro set_query_tag() -%}
-  {% do return(dbt_snowflake_query_tags.set_query_tag(
+  {% do return(yuki_snowflake_dbt_tags.set_query_tag(
     extra={
       'custom_config_property': config.get('custom_config_property'),
     }
@@ -93,7 +93,7 @@ Use the `extra` kwarg on `set_query_tag` to add your own key/value pairs while k
 {% endmacro %}
 
 {% macro unset_query_tag(original_query_tag) -%}
-  {% do return(dbt_snowflake_query_tags.unset_query_tag(original_query_tag)) %}
+  {% do return(yuki_snowflake_dbt_tags.unset_query_tag(original_query_tag)) %}
 {% endmacro %}
 ```
 
