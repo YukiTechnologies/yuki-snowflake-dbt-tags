@@ -75,8 +75,8 @@ check_changelog_date() {
 # Extract version from README.md (in the installation section)
 get_readme_version() {
     if [[ -f "README.md" ]]; then
-        # Look for revision field in packages.yml installation examples
-        grep "revision:" README.md | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+' | head -1
+        # Look for version field in packages.yml installation examples
+        grep "version:" README.md | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+' | head -1
     fi
 }
 

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- `DBT_JOB_NAME` is no longer mandatory. Falls back to `DBT_CLOUD_JOB_ID` (automatic in dbt Cloud), then `UNNAMED_JOB`. A warning is logged when `DBT_JOB_NAME` is not set.
 - Simplified integration test models to be more focused and minimal
 - Streamlined CI workflow configuration following best practices from established dbt packages
 - Removed unnecessary complexity from test SQL models
