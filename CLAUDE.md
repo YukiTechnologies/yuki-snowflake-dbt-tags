@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A dbt macro-only package (`yuki_snowflake_dbt_tags`) that automatically tags every Snowflake query during a dbt run with JSON-formatted metadata in the `QUERY_TAG` session parameter. Published on dbt Hub. Current version: 0.2.5.
+A dbt macro-only package (`yuki_snowflake_dbt_tags`) that automatically tags every Snowflake query during a dbt run with JSON-formatted metadata in the `QUERY_TAG` session parameter. Published on dbt Hub.
 
 ## Commands
 
