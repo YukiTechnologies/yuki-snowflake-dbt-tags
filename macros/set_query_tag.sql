@@ -31,9 +31,6 @@
 
   {# Resolve dbt job name: DBT_JOB_NAME -> DBT_CLOUD_JOB_ID -> UNNAMED_JOB #}
   {% set dbt_job_name = env_var('DBT_JOB_NAME', env_var('DBT_CLOUD_JOB_ID', 'UNNAMED_JOB')) %}
-  {% if not env_var('DBT_JOB_NAME', '') %}
-    {% do log("yuki-snowflake-dbt-tags warning: DBT_JOB_NAME is not set, using '{}'. Set DBT_JOB_NAME for readable job names in query tags.".format(dbt_job_name), True) %}
-  {% endif %}
 
   {# Add Yuki query tags #}
   {% do query_tag.update({

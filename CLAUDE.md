@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A dbt macro-only package (`yuki_snowflake_dbt_tags`) that automatically tags every Snowflake query during a dbt run with JSON-formatted metadata in the `QUERY_TAG` session parameter. Published on dbt Hub. Current version: 0.2.5.
+A dbt macro-only package (`yuki_snowflake_dbt_tags`) that automatically tags every Snowflake query during a dbt run with JSON-formatted metadata in the `QUERY_TAG` session parameter. Published on dbt Hub.
 
 ## Commands
 
@@ -19,7 +19,7 @@ dbt run           # Run models only
 dbt test          # Run tests only
 ```
 
-Required env vars for Snowflake: `DBT_SNOWFLAKE_ACCOUNT`, `DBT_SNOWFLAKE_USER`, `DBT_SNOWFLAKE_PASSWORD`, `DBT_SNOWFLAKE_ROLE`, `DBT_SNOWFLAKE_DATABASE`, `DBT_SNOWFLAKE_WAREHOUSE`, `DBT_SNOWFLAKE_SCHEMA`. The job name resolves via fallback chain: `DBT_JOB_NAME` -> `DBT_CLOUD_JOB_ID` -> `UNNAMED_JOB` (warns when `DBT_JOB_NAME` is not set).
+Required env vars for Snowflake: `DBT_SNOWFLAKE_ACCOUNT`, `DBT_SNOWFLAKE_USER`, `DBT_SNOWFLAKE_PASSWORD`, `DBT_SNOWFLAKE_ROLE`, `DBT_SNOWFLAKE_DATABASE`, `DBT_SNOWFLAKE_WAREHOUSE`, `DBT_SNOWFLAKE_SCHEMA`. The job name resolves via fallback chain: `DBT_JOB_NAME` -> `DBT_CLOUD_JOB_ID` -> `UNNAMED_JOB`.
 
 Pre-commit hooks: `pip install pre-commit && pre-commit install`
 

@@ -5,10 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.2.6] - 2026-02-17
 
 ### Changed
-- `DBT_JOB_NAME` is no longer mandatory. Falls back to `DBT_CLOUD_JOB_ID` (automatic in dbt Cloud), then `UNNAMED_JOB`. A warning is logged when `DBT_JOB_NAME` is not set.
+- `DBT_JOB_NAME` is no longer mandatory. Falls back to `DBT_CLOUD_JOB_ID` (automatic in dbt Cloud), then `UNNAMED_JOB`.
 - Simplified integration test models to be more focused and minimal
 - Streamlined CI workflow configuration following best practices from established dbt packages
 - Removed unnecessary complexity from test SQL models

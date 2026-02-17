@@ -15,7 +15,7 @@ To install this package, add the following entry to your `packages.yml` file in 
 ```yaml
 packages:
   - package: YukiTechnologies/yuki_snowflake_dbt_tags
-    version: 0.2.5
+    version: 0.2.6
 ```
 
 ## 🔧 Configuration
@@ -35,11 +35,9 @@ dispatch:
 
 The package resolves the job name using the following fallback chain:
 
-1. `DBT_JOB_NAME` environment variable (recommended  - human-readable)
+1. `DBT_JOB_NAME` environment variable (recommended - human-readable)
 2. `DBT_CLOUD_JOB_ID` environment variable (automatic in dbt Cloud)
 3. `UNNAMED_JOB` (default if neither is set)
-
-A warning is logged when `DBT_JOB_NAME` is not set.
 
 **Setting `DBT_JOB_NAME` in dbt Cloud:**
 
