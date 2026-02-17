@@ -31,9 +31,19 @@ dispatch:
       - dbt
 ```
 
-**Specifying a Custom Job Name**
+**Specifying a Job Name**
 
-1.	Navigate to: Deploy -> Environments -> Environments Variables.
+The package resolves the job name using the following fallback chain:
+
+1. `DBT_JOB_NAME` environment variable (recommended  - human-readable)
+2. `DBT_CLOUD_JOB_ID` environment variable (automatic in dbt Cloud)
+3. `UNNAMED_JOB` (default if neither is set)
+
+A warning is logged when `DBT_JOB_NAME` is not set.
+
+**Setting `DBT_JOB_NAME` in dbt Cloud:**
+
+1.	Navigate to: Deploy -> Environments -> Environment Variables.
 2.	Click Add variable.
 3.	Fill in the following details:
 
@@ -45,7 +55,7 @@ dispatch:
 Next, configure the job-specific override:
 1.	Go to: Deploy -> Jobs and select the relevant job.
 2.	Navigate to Settings -> Advanced Settings -> Environment Variables.
-3.	Locate `DBT_JOB_NAME` and define a Job override  - this should be the job name.	This job name will be reflected in the Yuki UI.
+3.	Locate `DBT_JOB_NAME` and define a Job override  - this should be the job name. This job name will be reflected in the Yuki UI.
 
 This custom job name will appear in your query tags, making it easier to identify and track specific jobs in the Snowflake query history.
 

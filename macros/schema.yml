@@ -7,7 +7,7 @@ macros:
       including model name, job name, and other contextual information.
 
       This macro generates a JSON query tag with the following fields:
-      - `dbt_job`: Job name from DBT_JOB_NAME environment variable
+      - `dbt_job`: Job name (from DBT_JOB_NAME, falling back to DBT_CLOUD_JOB_ID, then UNNAMED_JOB)
       - `dbt_model`: Name of the current dbt model
       - `dbt_enabled`: Whether Yuki tagging is enabled (from DBT_YUKI_ENABLED)
       - `dbt_target`: The current dbt target name

@@ -4,8 +4,7 @@
 
 {% macro default__set_query_tag(extra = {}) -%}
   {% set original_query_tag = get_current_query_tag() %}
-  {% set original_query_tag_parsed = {} %}
-  {% set clean_original_query_tag = {} %}
+  {% set clean_original_query_tag = '' %}
   {% set clean_original_query_tag_parsed = {} %}
 
   {% if original_query_tag %}
@@ -22,7 +21,7 @@
   {% set query_tag = config.get('query_tag', default={}) %}
 
   {% if query_tag is not mapping %}
-  {% do log("dbt-snowflake-query-tags warning: the query_tag config value of '{}' is not a mapping type, so is being ignored. If you'd like to add additional query tag information, use a mapping type instead, or remove it to avoid this message.".format(query_tag), True) %}
+  {% do log("yuki-snowflake-dbt-tags warning: the query_tag config value of '{}' is not a mapping type, so is being ignored. If you'd like to add additional query tag information, use a mapping type instead, or remove it to avoid this message.".format(query_tag), True) %}
   {% set query_tag = {} %} {# If the user has set the query tag config as a non mapping type, start fresh #}
   {% endif %}
 
@@ -30,9 +29,15 @@
   {% do query_tag.update(clean_original_query_tag_parsed) %}
   {% do query_tag.update(extra) %}
 
+  {# Resolve dbt job name: DBT_JOB_NAME -> DBT_CLOUD_JOB_ID -> UNNAMED_JOB #}
+  {% set dbt_job_name = env_var('DBT_JOB_NAME', env_var('DBT_CLOUD_JOB_ID', 'UNNAMED_JOB')) %}
+  {% if not env_var('DBT_JOB_NAME', '') %}
+    {% do log("yuki-snowflake-dbt-tags warning: DBT_JOB_NAME is not set, using '{}'. Set DBT_JOB_NAME for readable job names in query tags.".format(dbt_job_name), True) %}
+  {% endif %}
+
   {# Add Yuki query tags #}
   {% do query_tag.update({
-    "dbt_job": env_var('DBT_JOB_NAME'),
+    "dbt_job": dbt_job_name,
     "dbt_model": model.name,
     "dbt_enabled": env_var("DBT_YUKI_ENABLED", "true") | lower == "true",
     "dbt_target": target.name,
