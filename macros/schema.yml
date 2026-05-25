@@ -16,6 +16,9 @@ macros:
       - `resource_type`: Type of dbt resource (model, test, seed, etc.)
       - `full_refresh`: Boolean indicating if this is a full refresh (models only)
       - `materialization`: The materialization type (models only)
+      - `dbt_refs`: List of upstream model names this model refs (models, snapshots, tests; controlled by DBT_YUKI_DEPS_ENABLED)
+      - `dbt_sources`: List of upstream sources in "source.table" format (controlled by DBT_YUKI_DEPS_ENABLED)
+      - `deps_truncated`: Present and true when the tag was too large to include deps (rare; triggered above ~1800 chars)
     arguments:
       - name: extra
         type: dict

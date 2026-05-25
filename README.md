@@ -15,7 +15,7 @@ To install this package, add the following entry to your `packages.yml` file in 
 ```yaml
 packages:
   - package: YukiTechnologies/yuki_snowflake_dbt_tags
-    version: 0.2.6
+    version: 0.2.7
 ```
 
 ## 🔧 Configuration
@@ -66,6 +66,15 @@ If you have a use case where you want the job to run on the original warehouse s
 
 This configuration ensures that the job uses the original warehouse size while bypassing Yuki optimizations.
 
+## 🔗 Dependency Tracking
+
+By default the package includes the current model's upstream `refs` and `sources` in each query tag (`dbt_refs`, `dbt_sources`). This lets you reconstruct your dbt DAG directly from Snowflake's `QUERY_HISTORY` without uploading any artifacts.
+
+To opt out, set:
+
+&nbsp;&nbsp;- Key: `DBT_YUKI_DEPS_ENABLED`
+&nbsp;&nbsp;- Value: `False`
+
 
 ## 🛠 Usage
 
@@ -82,8 +91,12 @@ This configuration ensures that the job uses the original warehouse size while b
   "resource_type": "model",
   "full_refresh": false,
   "materialization": "incremental",
+  "dbt_refs": ["stg_orders", "stg_customers"],
+  "dbt_sources": ["raw.orders"]
 }
 ```
+
+If the tag exceeds ~1800 characters the dep lists are dropped and `"deps_truncated": true` is added instead (rare; only affects models with a very large number of upstream nodes).
 
 This makes it easy to filter and analyze queries by job or model name in Snowflake’s history.
 

@@ -1,0 +1,7 @@
+version: 2
+
+sources:
+  - name: information_schema
+    schema: information_schema
+    tables:
+      - name: tables

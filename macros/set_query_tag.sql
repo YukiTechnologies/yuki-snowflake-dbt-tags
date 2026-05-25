@@ -51,7 +51,38 @@
     ) -%}
   {% endif %}
 
+  {# Add upstream dependency info (refs + sources) when enabled #}
+  {% if env_var("DBT_YUKI_DEPS_ENABLED", "true") | lower == "true" %}
+    {% if model.resource_type in ['model', 'snapshot', 'test'] %}
+      {% set refs_list = [] %}
+      {% for r in (model.refs or []) %}
+        {% if r is mapping %}
+          {% do refs_list.append(r.get('name')) %}
+        {% elif r is sequence and r is not string %}
+          {% do refs_list.append(r[-1]) %}
+        {% else %}
+          {% do refs_list.append(r) %}
+        {% endif %}
+      {% endfor %}
+
+      {% set sources_list = [] %}
+      {% for s in (model.sources or []) %}
+        {% if s is sequence and s is not string and s | length >= 2 %}
+          {% do sources_list.append(s[0] ~ '.' ~ s[1]) %}
+        {% endif %}
+      {% endfor %}
+
+      {% do query_tag.update({"dbt_refs": refs_list, "dbt_sources": sources_list}) %}
+    {% endif %}
+  {% endif %}
+
   {% set query_tag_json = tojson(query_tag) %}
+  {% if query_tag_json | length > 1800 %}
+    {% do query_tag.pop('dbt_refs', none) %}
+    {% do query_tag.pop('dbt_sources', none) %}
+    {% do query_tag.update({"deps_truncated": true}) %}
+    {% set query_tag_json = tojson(query_tag) %}
+  {% endif %}
   {{ log("Setting query_tag to '" ~ query_tag_json ~ "'. Will reset to '" ~ clean_original_query_tag ~ "' after materialization.") }}
   {% do run_query("alter session set query_tag = '{}'".format(query_tag_json)) %}
   {{ return(clean_original_query_tag)}}

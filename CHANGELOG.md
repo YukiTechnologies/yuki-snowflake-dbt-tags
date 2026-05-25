@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.7] - 2026-05-26
+
+### Added
+- Upstream dependency info in query tags: `dbt_refs` (list of upstream model names) and `dbt_sources` (list of `source.table` strings) are now included automatically for models, snapshots, and tests. Enables DAG reconstruction directly from Snowflake `QUERY_HISTORY` without uploading `manifest.json`.
+- `DBT_YUKI_DEPS_ENABLED` env var (default `true`) to opt out of dependency tagging.
+- `deps_truncated: true` marker added to the query tag when the full tag would exceed ~1800 characters (protects against failures on models with very many upstream nodes).
+- Integration test models exercising the `ref()` and `source()` code paths.
+
 ## [0.2.6] - 2026-02-17
 
 ### Changed
