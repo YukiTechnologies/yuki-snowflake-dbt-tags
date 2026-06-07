@@ -43,6 +43,17 @@
     "resource_type": model.resource_type,
   }) %}
 
+  {# Add dbt Cloud context when available (set automatically in dbt Cloud runs) #}
+  {% set dbt_cloud_project_id = env_var('DBT_CLOUD_PROJECT_ID', '') %}
+  {% if dbt_cloud_project_id %}
+    {% do query_tag.update({"dbt_cloud_project_id": dbt_cloud_project_id}) %}
+  {% endif %}
+
+  {% set dbt_cloud_environment_name = env_var('DBT_CLOUD_ENVIRONMENT_NAME', '') %}
+  {% if dbt_cloud_environment_name %}
+    {% do query_tag.update({"dbt_cloud_environment_name": dbt_cloud_environment_name}) %}
+  {% endif %}
+
   {# Set full_refresh and materialization query tag for models only (not tests, seeds, etc.) #}
   {% if model.resource_type == 'model' %}
     {%- do query_tag.update(

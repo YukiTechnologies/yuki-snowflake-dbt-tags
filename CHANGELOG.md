@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-06-07
+
+### Added
+- Query tags now include `dbt_cloud_project_id` and `dbt_cloud_environment_name` when the corresponding `DBT_CLOUD_PROJECT_ID` / `DBT_CLOUD_ENVIRONMENT_NAME` environment variables are set (automatic in dbt Cloud deployment runs). Enables cost filtering and breakdown by dbt Cloud project and environment.
+
 ## [0.2.6] - 2026-02-17
 
 ### Changed
