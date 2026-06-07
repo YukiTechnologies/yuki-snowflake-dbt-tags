@@ -15,7 +15,7 @@ To install this package, add the following entry to your `packages.yml` file in 
 ```yaml
 packages:
   - package: YukiTechnologies/yuki_snowflake_dbt_tags
-    version: 0.2.6
+    version: 0.3.0
 ```
 
 ## 🔧 Configuration
@@ -80,10 +80,16 @@ This configuration ensures that the job uses the original warehouse size while b
   "invocation_id": "c5faa810-9e05-44d9-b00e-6a1bfbc82431",
   "run_cmd": "build",
   "resource_type": "model",
+  "dbt_cloud_project_id": "12345",
+  "dbt_cloud_environment_name": "Production",
   "full_refresh": false,
   "materialization": "incremental",
 }
 ```
+
+**dbt Cloud project and environment tags**
+
+When running in dbt Cloud, queries are additionally tagged with `dbt_cloud_project_id` and `dbt_cloud_environment_name`, sourced from the `DBT_CLOUD_PROJECT_ID` and `DBT_CLOUD_ENVIRONMENT_NAME` [special environment variables](https://docs.getdbt.com/docs/build/environment-variables#special-environment-variables) that dbt Cloud sets automatically. This lets you filter or break down cost and usage by dbt Cloud project and environment. The tags are omitted when the variables are not set (e.g. dbt Core), so non-Cloud users are unaffected — dbt Core users can opt in by setting these environment variables themselves.
 
 This makes it easy to filter and analyze queries by job or model name in Snowflake’s history.
 

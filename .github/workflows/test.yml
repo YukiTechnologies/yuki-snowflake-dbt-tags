@@ -10,6 +10,9 @@ on:
 env:
   DBT_JOB_NAME: ci-integration-test
   CI_RUNNER_TAGS: ubuntu-latest
+  # Simulate dbt Cloud special env vars so CI exercises the dbt Cloud tagging path
+  DBT_CLOUD_PROJECT_ID: '12345'
+  DBT_CLOUD_ENVIRONMENT_NAME: ci
 
 jobs:
   test:
