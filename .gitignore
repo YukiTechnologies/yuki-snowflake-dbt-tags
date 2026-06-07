@@ -9,6 +9,9 @@ package-lock.yml
 .python-version
 manifest.json
 
+# Python
+.venv/
+
 # macOS
 .DS_Store
 
