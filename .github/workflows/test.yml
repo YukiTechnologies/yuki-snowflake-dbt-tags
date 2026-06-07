@@ -52,13 +52,18 @@ jobs:
           cd integration_tests
           dbt parse
 
-  # Live Snowflake integration tests. Gated behind a manual-approval
-  # environment so credentialed runs don't execute automatically. Requires the
-  # SNOWFLAKE_* repo secrets and an "Approve Integration Tests" environment to
-  # be configured; until then this job stays pending rather than blocking PRs.
+  # Live Snowflake integration tests. Skipped unless the RUN_SNOWFLAKE_TESTS
+  # repository variable is set to 'true', so PRs stay green until the repo is
+  # configured with Snowflake credentials. When enabled, it is additionally
+  # gated behind a manual-approval "Approve Integration Tests" environment so
+  # credentialed runs don't execute automatically. To turn it on:
+  #   1. Add the SNOWFLAKE_* repo secrets.
+  #   2. Configure required reviewers on the "Approve Integration Tests" env.
+  #   3. Set the RUN_SNOWFLAKE_TESTS repo variable to 'true'.
   snowflake:
     name: Integration tests (Snowflake)
     needs: compile
+    if: ${{ vars.RUN_SNOWFLAKE_TESTS == 'true' }}
     runs-on: ubuntu-latest
     environment: Approve Integration Tests
 
