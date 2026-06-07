@@ -13,6 +13,10 @@ env:
   DBT_CLOUD_PROJECT_ID: '12345'
   DBT_CLOUD_ENVIRONMENT_NAME: ci
 
+# Least-privilege token: CI only needs to read the repo.
+permissions:
+  contents: read
+
 jobs:
   # Always-on, no credentials: proves the package installs and the macros
   # compile. `dbt parse` renders the profile but never connects to Snowflake,
@@ -33,6 +37,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -40,7 +46,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dbt
-        run: pip install dbt-snowflake
+        run: pip install "dbt-snowflake>=1.8,<2.0"
 
       - name: Install dependencies
         run: |
@@ -79,6 +85,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -86,7 +94,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dbt
-        run: pip install dbt-snowflake
+        run: pip install "dbt-snowflake>=1.8,<2.0"
 
       - name: Install dependencies
         run: |
