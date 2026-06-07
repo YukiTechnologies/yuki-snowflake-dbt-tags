@@ -9,14 +9,58 @@ on:
 
 env:
   DBT_JOB_NAME: ci-integration-test
-  CI_RUNNER_TAGS: ubuntu-latest
   # Simulate dbt Cloud special env vars so CI exercises the dbt Cloud tagging path
   DBT_CLOUD_PROJECT_ID: '12345'
   DBT_CLOUD_ENVIRONMENT_NAME: ci
 
 jobs:
-  test:
+  # Always-on, no credentials: proves the package installs and the macros
+  # compile. `dbt parse` renders the profile but never connects to Snowflake,
+  # so dummy connection values are enough. Runs on every PR, including forks.
+  compile:
+    name: Compile (no credentials)
     runs-on: ubuntu-latest
+
+    env:
+      DBT_SNOWFLAKE_ACCOUNT: dummy
+      DBT_SNOWFLAKE_USER: dummy
+      DBT_SNOWFLAKE_PASSWORD: dummy
+      DBT_SNOWFLAKE_ROLE: dummy
+      DBT_SNOWFLAKE_DATABASE: dummy
+      DBT_SNOWFLAKE_WAREHOUSE: dummy
+      DBT_SNOWFLAKE_SCHEMA: dbt_integration_tests_ci
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dbt
+        run: pip install dbt-snowflake
+
+      - name: Install dependencies
+        run: |
+          cd integration_tests
+          dbt deps
+
+      - name: Parse project
+        run: |
+          cd integration_tests
+          dbt parse
+
+  # Live Snowflake integration tests. Gated behind a manual-approval
+  # environment so credentialed runs don't execute automatically. Requires the
+  # SNOWFLAKE_* repo secrets and an "Approve Integration Tests" environment to
+  # be configured; until then this job stays pending rather than blocking PRs.
+  snowflake:
+    name: Integration tests (Snowflake)
+    needs: compile
+    runs-on: ubuntu-latest
+    environment: Approve Integration Tests
 
     env:
       DBT_SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
@@ -37,8 +81,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dbt
-        run: |
-          pip install dbt-core>=1.0.0 dbt-snowflake>=1.0.0
+        run: pip install dbt-snowflake
 
       - name: Install dependencies
         run: |
