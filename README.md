@@ -83,7 +83,7 @@ This configuration ensures that the job uses the original warehouse size while b
   "dbt_cloud_project_id": "12345",
   "dbt_cloud_environment_name": "Production",
   "full_refresh": false,
-  "materialization": "incremental",
+  "materialization": "incremental"
 }
 ```
 
