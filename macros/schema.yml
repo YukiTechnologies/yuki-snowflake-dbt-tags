@@ -21,6 +21,23 @@ macros:
         type: dict
         description: Additional key-value pairs to include in the query tag (optional)
 
+  - name: build_query_tag
+    description: |
+      Builds the same query tag as `set_query_tag` but WITHOUT executing
+      `ALTER SESSION`. Returns a mapping with two keys:
+      - `query_tag`: the merged tag dict (model config + session tag + `extra` + Yuki fields)
+      - `original_query_tag`: the value to restore afterwards, with any Yuki
+        `PseudoWarehouse` prefix already stripped
+
+      Use this to compose Yuki's tags with another query-tagging package in a
+      single `ALTER SESSION`: call `build_query_tag` to let Yuki parse/strip the
+      session tag, then pass the resulting `query_tag` as the other package's
+      `extra` so it performs the one and only session update.
+    arguments:
+      - name: extra
+        type: dict
+        description: Additional key-value pairs to include in the query tag (optional)
+
   - name: unset_query_tag
     description: |
       Resets the Snowflake query tag to its original value after a model has been materialized.
@@ -29,6 +46,9 @@ macros:
       - name: original_query_tag
         type: string
         description: The original query tag to restore
+
+  - name: default__build_query_tag
+    description: Default implementation of build_query_tag for Snowflake adapter
 
   - name: default__set_query_tag
     description: Default implementation of set_query_tag for Snowflake adapter
