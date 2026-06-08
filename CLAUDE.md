@@ -26,8 +26,8 @@ Pre-commit hooks: `pip install pre-commit && pre-commit install`
 ## Architecture
 
 **Core macros** (`macros/set_query_tag.sql`):
-- `set_query_tag(extra={})` — Saves existing session query tag, merges model config tags + session tags + `extra` dict + Yuki standard tags (job name, model, target, invocation ID, etc.), then executes `ALTER SESSION SET QUERY_TAG`. Returns the original tag for restoration.
-- `unset_query_tag(original_query_tag)` — Restores the pre-run session query tag after materialization.
+- `set_query_tag(extra={})`: Saves existing session query tag, merges model config tags + session tags + `extra` dict + Yuki standard tags (job name, model, target, invocation ID, etc.), then executes `ALTER SESSION SET QUERY_TAG`. Returns the original tag for restoration.
+- `unset_query_tag(original_query_tag)`: Restores the pre-run session query tag after materialization.
 
 Both use `adapter.dispatch()` so users can override them per-adapter. Users integrate by adding this package to their `dbt_project.yml` dispatch search order, which intercepts dbt's built-in `set_query_tag`/`unset_query_tag` hooks.
 

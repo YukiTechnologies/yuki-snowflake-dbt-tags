@@ -1,6 +1,8 @@
 [project]
 name = "yuki-snowflake-dbt-tags"
-version = "0.2.6"
+# Placeholder required by uv's [project] table; this dev env is never published,
+# so it does not track the dbt package version (see dbt_project.yml / CHANGELOG).
+version = "0.0.0"
 description = "Dev environment for the yuki_snowflake_dbt_tags dbt package"
 requires-python = ">=3.11"
 dependencies = [
