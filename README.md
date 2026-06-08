@@ -128,9 +128,7 @@ Define a project-level override (resolved ahead of both packages) that lets this
 
 ```jinja
 {% macro set_query_tag(extra = {}) -%}
-  {# This package builds the tag (and strips its PseudoWarehouse prefix) without
-     altering the session. The other package then does the single ALTER SESSION,
-     layering its own fields on top. #}
+  {# This package builds the tag without altering the session, and the other package performs the single ALTER SESSION. #}
   {% set built = yuki_snowflake_dbt_tags.build_query_tag(extra=extra) %}
   {% do your_other_query_tagging_package.set_query_tag(extra=built["query_tag"]) %}
   {{ return(built["original_query_tag"]) }}
