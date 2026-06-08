@@ -89,7 +89,7 @@ This configuration ensures that the job uses the original warehouse size while b
 
 **dbt Cloud project and environment tags**
 
-When running in dbt Cloud, queries are additionally tagged with `dbt_cloud_project_id` and `dbt_cloud_environment_name`, sourced from the `DBT_CLOUD_PROJECT_ID` and `DBT_CLOUD_ENVIRONMENT_NAME` [special environment variables](https://docs.getdbt.com/docs/build/environment-variables#special-environment-variables) that dbt Cloud sets automatically. This lets you filter or break down cost and usage by dbt Cloud project and environment. The tags are omitted when the variables are not set (e.g. dbt Core), so non-Cloud users are unaffected — dbt Core users can opt in by setting these environment variables themselves.
+When running in dbt Cloud, queries are additionally tagged with `dbt_cloud_project_id` and `dbt_cloud_environment_name`, sourced from the `DBT_CLOUD_PROJECT_ID` and `DBT_CLOUD_ENVIRONMENT_NAME` [special environment variables](https://docs.getdbt.com/docs/build/environment-variables#special-environment-variables) that dbt Cloud sets automatically. This lets you filter or break down cost and usage by dbt Cloud project and environment. The tags are omitted when the variables are not set (e.g. dbt Core), so non-Cloud users are unaffected; dbt Core users can opt in by setting these environment variables themselves.
 
 This makes it easy to filter and analyze queries by job or model name in Snowflake’s history.
 
@@ -99,15 +99,15 @@ Use the `extra` kwarg on `set_query_tag` to add your own key/value pairs while k
 
 ```jinja
 {% macro set_query_tag() -%}
-  {% do return(yuki_snowflake_dbt_tags.set_query_tag(
+  {{ return(yuki_snowflake_dbt_tags.set_query_tag(
     extra={
       'custom_config_property': config.get('custom_config_property'),
     }
-  )) %}
+  )) }}
 {% endmacro %}
 
 {% macro unset_query_tag(original_query_tag) -%}
-  {% do return(yuki_snowflake_dbt_tags.unset_query_tag(original_query_tag)) %}
+  {{ return(yuki_snowflake_dbt_tags.unset_query_tag(original_query_tag)) }}
 {% endmacro %}
 ```
 
@@ -115,14 +115,9 @@ Calling the package macros keeps the built-in metadata and simply adds your cust
 
 ## 🔗 Composing With Another Query-Tagging Package
 
-dbt's Snowflake adapter calls a single `set_query_tag` hook per node, so if you use this package alongside **another package that also overrides `set_query_tag`**, only one can win — and naively chaining them runs `ALTER SESSION` twice per node. The other package also won't understand this package's `PseudoWarehouse` session-tag format (`{"PseudoWarehouse":…};;{…}`), so it can drop the prefix and anything after `;;`.
+dbt invokes a single `set_query_tag` hook per node, so installing this package alongside **another package that also overrides `set_query_tag`** isn't enough; only one can win.
 
-Use **`build_query_tag`** to compose them with a single `ALTER SESSION`. It runs all of this package's logic — including the `PseudoWarehouse` parse/strip — and returns the merged tag **without** touching the session:
-
-```jinja
-{{ build_query_tag(extra={}) }}
--- {"query_tag": {<merged tag dict>}, "original_query_tag": "<cleaned original, to restore>"}
-```
+Use **`build_query_tag`** to combine both with a single `ALTER SESSION`. It builds this package's merged tag **without** touching the session, returning a mapping with two keys: `query_tag` (the merged tag dict) and `original_query_tag` (the value to restore).
 
 In your dbt project, create `macros/set_query_tag.sql` and add the macros below. dbt resolves project-level macros ahead of any package, so this override becomes the single `set_query_tag`/`unset_query_tag` hook dbt invokes. It lets this package build the tag, then hands the result to the other package as its `extra` so the other package performs the one and only `ALTER SESSION`:
 
@@ -135,11 +130,11 @@ In your dbt project, create `macros/set_query_tag.sql` and add the macros below.
 {% endmacro %}
 
 {% macro unset_query_tag(original_query_tag) -%}
-  {% do return(yuki_snowflake_dbt_tags.unset_query_tag(original_query_tag)) %}
+  {{ return(yuki_snowflake_dbt_tags.unset_query_tag(original_query_tag)) }}
 {% endmacro %}
 ```
 
-This keeps this package authoritative over `PseudoWarehouse` handling and restore semantics, while the other package's fields are merged in — all in one session update. Because this package returns an already-cleaned dict, the other package never has to parse the raw `PseudoWarehouse` tag.
+This keeps this package's tags and restore behavior authoritative while merging in the other package's fields, all in a single session update.
 
 ## 📄 License
 This package is open-source under the MIT License. See the LICENSE file for details.
