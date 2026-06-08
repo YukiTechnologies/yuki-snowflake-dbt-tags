@@ -2,7 +2,15 @@
   {{ return(adapter.dispatch('set_query_tag', 'yuki_snowflake_dbt_tags')(extra=extra)) }}
 {%- endmacro %}
 
-{% macro default__set_query_tag(extra = {}) -%}
+{# Builds the query tag WITHOUT touching the session, so callers can compose it
+   with other tagging packages and run a single `ALTER SESSION`. Returns a mapping
+   with `query_tag` (the merged tag dict) and `original_query_tag` (the value to
+   restore afterwards, with any Yuki PseudoWarehouse prefix already stripped). #}
+{% macro build_query_tag(extra = {}) -%}
+  {{ return(adapter.dispatch('build_query_tag', 'yuki_snowflake_dbt_tags')(extra=extra)) }}
+{%- endmacro %}
+
+{% macro default__build_query_tag(extra = {}) -%}
   {% set original_query_tag = get_current_query_tag() %}
   {% set clean_original_query_tag = '' %}
   {% set clean_original_query_tag_parsed = {} %}
@@ -62,10 +70,15 @@
     ) -%}
   {% endif %}
 
-  {% set query_tag_json = tojson(query_tag) %}
-  {{ log("Setting query_tag to '" ~ query_tag_json ~ "'. Will reset to '" ~ clean_original_query_tag ~ "' after materialization.") }}
+  {{ return({"query_tag": query_tag, "original_query_tag": clean_original_query_tag}) }}
+{% endmacro %}
+
+{% macro default__set_query_tag(extra = {}) -%}
+  {% set built = yuki_snowflake_dbt_tags.build_query_tag(extra=extra) %}
+  {% set query_tag_json = tojson(built["query_tag"]) %}
+  {{ log("Setting query_tag to '" ~ query_tag_json ~ "'. Will reset to '" ~ built["original_query_tag"] ~ "' after materialization.") }}
   {% do run_query("alter session set query_tag = '{}'".format(query_tag_json)) %}
-  {{ return(clean_original_query_tag)}}
+  {{ return(built["original_query_tag"])}}
 {% endmacro %}
 
 {% macro unset_query_tag(original_query_tag) -%}

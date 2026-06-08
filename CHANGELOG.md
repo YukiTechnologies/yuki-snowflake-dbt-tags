@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-06-08
+
+### Added
+- New `build_query_tag(extra={})` macro that returns the merged query tag (`{"query_tag": ..., "original_query_tag": ...}`) **without** executing `ALTER SESSION`. Lets projects compose Yuki's tags with another query-tagging package in a single `ALTER SESSION` while keeping Yuki authoritative over `PseudoWarehouse` parsing/stripping. `set_query_tag` now delegates to it; its behavior is unchanged.
+- README: new "Composing With Another Query-Tagging Package" section documenting the single-`ALTER SESSION` chaining pattern via `build_query_tag`.
+
 ## [0.3.0] - 2026-06-07
 
 ### Added

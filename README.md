@@ -15,7 +15,7 @@ To install this package, add the following entry to your `packages.yml` file in 
 ```yaml
 packages:
   - package: YukiTechnologies/yuki_snowflake_dbt_tags
-    version: 0.3.0
+    version: 0.3.1
 ```
 
 ## 🔧 Configuration
@@ -112,6 +112,36 @@ Use the `extra` kwarg on `set_query_tag` to add your own key/value pairs while k
 ```
 
 Calling the package macros keeps the built-in metadata and simply adds your custom fields.
+
+## 🔗 Composing With Another Query-Tagging Package
+
+dbt's Snowflake adapter calls a single `set_query_tag` hook per node, so if you use this package alongside **another package that also overrides `set_query_tag`**, only one can win — and naively chaining them runs `ALTER SESSION` twice per node. The other package also won't understand this package's `PseudoWarehouse` session-tag format (`{"PseudoWarehouse":…};;{…}`), so it can drop the prefix and anything after `;;`.
+
+Use **`build_query_tag`** to compose them with a single `ALTER SESSION`. It runs all of this package's logic — including the `PseudoWarehouse` parse/strip — and returns the merged tag **without** touching the session:
+
+```jinja
+{{ build_query_tag(extra={}) }}
+-- {"query_tag": {<merged tag dict>}, "original_query_tag": "<cleaned original, to restore>"}
+```
+
+Define a project-level override (resolved ahead of both packages) that lets this package build the tag, then hands the result to the other package as its `extra` so it performs the one and only `ALTER SESSION`:
+
+```jinja
+{% macro set_query_tag(extra = {}) -%}
+  {# This package builds the tag (and strips its PseudoWarehouse prefix) without
+     altering the session. The other package then does the single ALTER SESSION,
+     layering its own fields on top. #}
+  {% set built = yuki_snowflake_dbt_tags.build_query_tag(extra=extra) %}
+  {% do your_other_query_tagging_package.set_query_tag(extra=built["query_tag"]) %}
+  {{ return(built["original_query_tag"]) }}
+{% endmacro %}
+
+{% macro unset_query_tag(original_query_tag) -%}
+  {% do return(yuki_snowflake_dbt_tags.unset_query_tag(original_query_tag)) %}
+{% endmacro %}
+```
+
+This keeps this package authoritative over `PseudoWarehouse` handling and restore semantics, while the other package's fields are merged in — all in one session update. Because this package returns an already-cleaned dict, the other package never has to parse the raw `PseudoWarehouse` tag.
 
 ## 📄 License
 This package is open-source under the MIT License. See the LICENSE file for details.
