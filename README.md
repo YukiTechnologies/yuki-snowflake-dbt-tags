@@ -124,7 +124,7 @@ Use **`build_query_tag`** to compose them with a single `ALTER SESSION`. It runs
 -- {"query_tag": {<merged tag dict>}, "original_query_tag": "<cleaned original, to restore>"}
 ```
 
-Define a project-level override (resolved ahead of both packages) that lets this package build the tag, then hands the result to the other package as its `extra` so it performs the one and only `ALTER SESSION`:
+In your dbt project, create `macros/set_query_tag.sql` and add the macros below. dbt resolves project-level macros ahead of any package, so this override becomes the single `set_query_tag`/`unset_query_tag` hook dbt invokes. It lets this package build the tag, then hands the result to the other package as its `extra` so the other package performs the one and only `ALTER SESSION`:
 
 ```jinja
 {% macro set_query_tag(extra = {}) -%}
