@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2026-08-05
+
+### Fixed
+- `extra` is now annotated as `dict[string, any]` in `macros/schema.yml`. dbt's macro-argument validator accepts `dict` only with its two type parameters, so bare `dict` made every parse of a consuming project emit `Argument extra in the yaml for macro set_query_tag has an invalid type.` (and the same for `build_query_tag` since 0.3.1). Annotation only; no macro behavior changes.
+
 ## [0.3.1] - 2026-06-08
 
 ### Added

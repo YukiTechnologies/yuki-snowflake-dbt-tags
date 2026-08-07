@@ -18,7 +18,7 @@ macros:
       - `materialization`: The materialization type (models only)
     arguments:
       - name: extra
-        type: dict
+        type: dict[string, any]
         description: Additional key-value pairs to include in the query tag (optional)
 
   - name: build_query_tag
@@ -35,7 +35,7 @@ macros:
       `extra` so it performs the one and only session update.
     arguments:
       - name: extra
-        type: dict
+        type: dict[string, any]
         description: Additional key-value pairs to include in the query tag (optional)
 
   - name: unset_query_tag
